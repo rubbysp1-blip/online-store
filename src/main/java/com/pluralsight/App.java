@@ -12,9 +12,6 @@ public class App {
 
         Scanner input = new Scanner(System.in);
 
-
-        //displayMenu(input);
-
         int menuDecision = 0;
 
         while(menuDecision != 3) {
@@ -23,26 +20,40 @@ public class App {
             input.nextLine();
 
             switch (menuDecision) {
-                case 1 -> System.out.println(); //displayProducts(books, input);
+                case 1 -> displayProducts(inventory); //displayProducts(books, input);
                 case 2 -> System.out.println();//displayCart(books, input);
                 case 3 -> System.out.println("Goodbye!");
                 default -> System.out.println("Invalid Input!");
             }
         }
+
+
+    }
+
+    private static void displayProducts(ArrayList<Product> inventory) {
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("product.csv"));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("products.csv"));
             String line;
+            bufferedReader.readLine();
             while((line = bufferedReader.readLine()) != null){
                 String[] products = line.split("\\|");
                 inventory.add(new Product(Integer.parseInt(products[0]), products[1], Double.parseDouble(products[2])));
             }
             //sortListByName(inventory);
-            //printInventory(inventory);
+            printInventory(inventory);
 
         } catch (IOException e) {
-            System.out.print("ERROR: File not found please check file name or direction.");
+            System.out.println("ERROR: File not found please check file name or direction.");
         }
+    }
 
+    private static void printInventory(ArrayList<Product> inventory) {
+        System.out.println("""
+                We carry the following inventory:\s
+                ---------------------------------""");
+        for (Product p : inventory) {
+            System.out.println(p.toPriceFormat());
+        }
     }
 
     private static ArrayList<Product> getProducts() {
