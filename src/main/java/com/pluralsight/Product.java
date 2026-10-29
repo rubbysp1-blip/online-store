@@ -55,7 +55,7 @@ public class Product {
     }
 
     public String toPriceFormat() {
-        return String.format("id: %d %s - Price: $%.2f",
-                id, name, price);
+        return String.format("id: %s %s - Price: $%.2f Category: %s",
+                id, name, price, category);
     }
 }
