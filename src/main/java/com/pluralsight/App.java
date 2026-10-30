@@ -1,5 +1,7 @@
 package com.pluralsight;
 
+import org.w3c.dom.ls.LSOutput;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,38 +12,48 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class App {
+    static Scanner input = new Scanner(System.in);
+
     public static void main(String[] args) {
         ArrayList<Product> inventory = getProducts();
+        ArrayList<Product> cart = getProducts();
 
-        Scanner input = new Scanner(System.in);
 
+        //addProductToCart(input, inventory, cart);
+
+        //System.out.println(cart);
         //displayMenu(input);
-        mainMenuDisplay(input, inventory);
-//        while(menuDecision != 3) {
-//            displayMenu(input);
-//            menuDecision = input.nextInt();
-//            input.nextLine();
+
+        mainMenuDisplay(input, inventory, cart);
 //
-//            switch (menuDecision) {
-//                case 1 -> displayProducts(inventory, input); //displayProducts(books, input);
-//                case 2 -> System.out.println();//displayCart(books, input);
-//                case 3 -> System.out.println("Goodbye!");
-//                default -> System.out.println("Invalid Input!");
-//            }
-//        }
 
 
     }
 
-    private static void mainMenuDisplay(Scanner input, ArrayList<Product> inventory) {
+    private static void addProductToCart(Scanner input, ArrayList<Product> inventory, ArrayList<Product> cart) {
+        System.out.print("Enter the SKU of product: ");
+        String skuNumber = input.nextLine().toUpperCase().trim();
+
+        for (Product product : inventory){
+            if(product.getId().equals(skuNumber)){
+                String[] item = product.toCartDisplay().split(",");
+                cart.add(new Product(item[0], item[1], Double.parseDouble(item[2]), item[3]));
+                //cart.add(new Product(product.getId(), product.getName(), product.getPrice(), product.getCategory()));
+            }
+
+        }
+        printCartItems(cart, input);
+    }
+
+    private static void mainMenuDisplay(Scanner input, ArrayList<Product> inventory, ArrayList<Product> cart) {
         int mainMenuDecision = 0;
         displayMenu(input);
         mainMenuDecision = input.nextInt();
         input.nextLine();
 
         switch (mainMenuDecision) {
-            case 1 -> displayProducts(inventory, input); //displayProducts(books, input);
-            case 2 -> System.out.println();//displayCart(books, input);
+            case 1 -> displayProducts(inventory, cart, input); //displayProducts(books, input);
+            case 2 -> printCartItems(cart, input);//displayCart(books, input);
             case 3 -> {
                 System.out.println("Goodbye!");
                 input.close();
@@ -52,7 +64,7 @@ public class App {
     }
 
 
-    private static void displayProducts(ArrayList<Product> inventory, Scanner input) {
+    private static void displayProducts(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner input) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("products.csv"));
             String line;
@@ -69,13 +81,22 @@ public class App {
 
             switch (menuDecision){
                 case 1-> searchBy(inventory, input);//searchByRange(inventory, input);//search list
-                case 2-> System.out.println();//add product to cart
-                case 3-> mainMenuDisplay(input, inventory);//displayMenu
+                case 2-> addProductToCart(input, inventory, cart);//add product to cart
+                case 3-> mainMenuDisplay(input, inventory, cart);//displayMenu
                 default -> System.out.print("Number out of range!");
             }
 
         } catch (IOException e) {
             System.out.println("ERROR: File not found please check file name or direction.");
+        }
+    }
+    private static void printCartItems(ArrayList<Product> cart, Scanner input){
+        System.out.println("""
+                
+                Your cart items:\s
+                ---------------------------------""");
+        for (Product items : cart) {
+            System.out.println(items.toPriceFormat());
         }
     }
 
